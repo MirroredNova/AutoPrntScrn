@@ -37,7 +37,6 @@ def main():
         print(suffix)
         driver.get(base_url + suffix)
 
-        image = None
         try:
             image = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//img[@id='screenshot-image']")))
