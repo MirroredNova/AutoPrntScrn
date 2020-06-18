@@ -1,3 +1,4 @@
+import datetime
 import string
 import random
 import requests
@@ -30,6 +31,7 @@ def get_suffix():
 
 def main():
     repeats = int(input("How many images would you like: "))
+    begin_time = datetime.datetime.now()
     driver = webdriver.Chrome()
     for i in range(repeats):
 
@@ -49,6 +51,7 @@ def main():
             shutil.copyfileobj(response.raw, out_file)
         del response
 
+    print(datetime.datetime.now() - begin_time)
     driver.close()
 
 
