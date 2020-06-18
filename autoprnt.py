@@ -1,14 +1,12 @@
+import datetime
+import shutil
 import string
 import random
 import requests
-import shutil
-
-from selenium.common.exceptions import TimeoutException
-from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-
+import timeit
+from bs4 import BeautifulSoup
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 
 lower_alphabet = string.ascii_lowercase + "1234567890"
 base_url = "https://prnt.sc/"
@@ -30,27 +28,29 @@ def get_suffix():
 
 def main():
     repeats = int(input("How many images would you like: "))
-    driver = webdriver.Chrome()
+    begin_time = datetime.datetime.now()
     for i in range(repeats):
-
         suffix = get_suffix()
         print(suffix)
-        driver.get(base_url + suffix)
 
-        image = None
         try:
-            image = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//img[@id='screenshot-image']")))
-        except TimeoutException:
-            print("The suffix " + suffix + " is invalid")
+            response1 = requests.get(base_url + suffix, headers={'User-Agent': 'Mozilla/5.0'})
+            soup = BeautifulSoup(response1.content.decode("utf-8"), features="html.parser")
+            imgsrc = soup.find('img', attrs={'id': 'screenshot-image'})['src']
+        except Exception:
             continue
 
-        response = requests.get(image.get_attribute('src'), stream=True)
+        validate = URLValidator()
+        try:
+            validate(imgsrc)
+        except ValidationError:
+            imgsrc = "https:" + imgsrc
+
+        response2 = requests.get(imgsrc, stream=True)
         with open('ImageDump/' + suffix + '.png', 'wb') as out_file:
-            shutil.copyfileobj(response.raw, out_file)
-        del response
+            shutil.copyfileobj(response2.raw, out_file)
+        del response2
 
-    driver.close()
-
+    print(datetime.datetime.now() - begin_time)
 
 main()
