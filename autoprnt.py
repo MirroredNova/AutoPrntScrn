@@ -40,6 +40,7 @@ def main():
     """
     repeats = int(input("How many images would you like: "))  # ask for number of images to get
     begin_time = datetime.datetime.now()  # start time
+    
     for i in range(repeats):
         suffix = get_suffix()  # get suffix
         print(suffix)
@@ -71,6 +72,7 @@ def main():
             print("Image " + suffix + " removed.")
 
     print("Total runtime: " + str(datetime.datetime.now() - begin_time))  # print time
+
 
 
 main()

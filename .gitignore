@@ -1,1 +1,2 @@
-/ImageDump/
+ImageDump/*
+!ImageDump/.gitkeep
